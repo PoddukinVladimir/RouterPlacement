@@ -64,7 +64,7 @@ namespace RouterPlacement
                 var allRouterOptionsSortedByBenefit = FindBestCoverageCellsForRouters();
 
                 // if there are no options left
-                if (allRouterOptionsSortedByBenefit.Count == 0) break;
+                // if (allRouterOptionsSortedByBenefit.Count == 0) break;
 
                 var bestOption = allRouterOptionsSortedByBenefit[0];
 
