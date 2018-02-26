@@ -66,6 +66,8 @@ namespace RouterPlacement
                 // if there are no options left
                 // if (allRouterOptionsSortedByBenefit.Count == 0) break;
 
+                if (allRouterOptionsSortedByBenefit.Count == 0) return;
+
                 var bestOption = allRouterOptionsSortedByBenefit[0];
 
                 // check if we can afford best option to put router into
@@ -140,7 +142,7 @@ namespace RouterPlacement
                 });
             }
 
-            bestCoverageRate = cellsSortedByBenefit.OrderByDescending(cb => cb.CellCoverage).ThenBy(cb => cb.CellCost).ToList()[0].CellCoverage;
+            // bestCoverageRate = cellsSortedByBenefit.OrderByDescending(cb => cb.CellCoverage).ThenBy(cb => cb.CellCost).ToList()[0].CellCoverage;
 
             return cellsSortedByBenefit.OrderByDescending(cb => cb.CellCoverage).ThenBy(cb => cb.CellCost).ToList();
         }

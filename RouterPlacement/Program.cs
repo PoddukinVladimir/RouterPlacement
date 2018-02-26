@@ -12,7 +12,8 @@ namespace RouterPlacement
     {
         static void Main(string[] args)
         {
-            var input = File.ReadAllText("C:\\Users\\1\\Source\\Repos\\ConsoleApp1\\ConsoleApp1\\Input\\charleston_road.in");
+            var path = Environment.CurrentDirectory + "\\Input\\charleston_road.in";
+            var input = File.ReadAllText(path);
             var building = Parser.Parse(input);
 
             var solver = new Solver(building);
