@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RouterPlacement", "ConsoleApp1\RouterPlacement.csproj", "{EBA38B2C-C430-4712-8DD2-DF0CAFE28D09}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RouterPlacement", "RouterPlacement\RouterPlacement.csproj", "{EBA38B2C-C430-4712-8DD2-DF0CAFE28D09}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,6 +20,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {3E3EEA14-B479-4899-B5AD-4678F3A5C8DB}
+		SolutionGuid = {586374AD-5063-467F-A35C-F2E8E70D6268}
 	EndGlobalSection
 EndGlobal
