@@ -20,6 +20,55 @@ namespace RouterPlacement
             routerRadius = _building.RouterRadius;
         }
 
+        private void DrawMatrix()
+        {
+            Console.Clear();
+            for (int i = 0; i < building.cells.GetLength(0); i++)
+            {
+                for (int j = 0; j < building.cells.GetLength(1); j++)
+                {
+                    //if (building.cells[i, j].HasRouter) Console.Write("r");
+                    switch (building.cells[i, j].Type)
+                    {
+                        case "target":
+                            Console.Write(".");
+                            break;
+                        case "void":
+                            Console.Write("-");
+                            break;
+                        case "wall":
+                            Console.ForegroundColor = ConsoleColor.Blue;
+                            Console.Write("#");
+                            Console.ForegroundColor = ConsoleColor.White;
+                            break;
+                    }
+                }
+                Console.WriteLine();
+            }
+        }
+
+        private void DrawBackbone(int bCol, int bRow)
+        {
+            Console.SetCursorPosition(bCol, bRow);
+            Console.Write("~");
+        }
+
+        private void DrawRouter(Cell routerCell)
+        {
+            Console.SetCursorPosition(routerCell.Column, routerCell.Row);
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write("R");
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+
+        public void DrawCoveredCells(int j, int i)
+        {
+            Console.SetCursorPosition(j, i);
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(".");
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+
         public void CreateOutput()
         {
             using (StreamWriter sw = File.CreateText("charleston_road.out.txt"))
@@ -59,6 +108,7 @@ namespace RouterPlacement
 
         public void FindOptimalRouterPlacement()
         {
+            DrawMatrix();
             while (building.Budget > 0 || building.Budget > ((building.targetCells.Count - building.totalCoverage) * 1000))
             {
                 var allRouterOptionsSortedByBenefit = FindBestCoverageCellsForRouters();
@@ -107,7 +157,7 @@ namespace RouterPlacement
             foreach (var targetCell in building.targetCells)
             {
                 // decreases time spent on calculations by 5-7 times, but score decreases as well
-                // if (targetCell.IsCovered) continue;
+                if (targetCell.IsCovered) continue;
 
                 var wallCellsCoveredByRouter = CreateWallCellsListForTargetCell(targetCell, out var iterationP);
 
@@ -292,6 +342,8 @@ namespace RouterPlacement
                     {
                         if (IsTargetCellCovered(building.cells[i, j], routerCell, wallCells))
                         {
+                            DrawCoveredCells(j, i);
+
                             building.cells[i, j].IsCovered = true;
                         }
                     }
@@ -316,7 +368,7 @@ namespace RouterPlacement
             // Second case - If backbone should be installed in straight line
             if (routerCell.Row == nearestBackboneCell.Row || routerCell.Column == nearestBackboneCell.Column)
             {
-                ConnectBackboneInStraightLine(rRow, rCol, bRow, bCol);
+                ConnectBackboneInStraightLine(rRow, rCol, bRow, bCol, routerCell);
             }
             
             // Other cases (moving diagonally)
@@ -325,52 +377,68 @@ namespace RouterPlacement
                 do
                 {
                     building.backboneCells.Add(building.cells[++bRow, ++bCol]);
+
+                    DrawBackbone(bCol, bRow);
                 } while (rRow != bRow && rCol != bCol);
+
+                DrawRouter(routerCell);
 
                 // in case router can be installed straightly diagonally
                 if (rRow == bRow && rCol == bCol) return;
 
-                ConnectBackboneInStraightLine(rRow, rCol, bRow, bCol);
+                ConnectBackboneInStraightLine(rRow, rCol, bRow, bCol, routerCell);
             }
             if (routerCell.Row < nearestBackboneCell.Row && routerCell.Column > nearestBackboneCell.Column)
             {
                 do
                 {
                     building.backboneCells.Add(building.cells[--bRow, ++bCol]);
+
+                    DrawBackbone(bCol, bRow);
                 } while (rRow != bRow && rCol != bCol);
+
+                DrawRouter(routerCell);
 
                 // in case router can be installed straightly diagonally
                 if (rRow == bRow && rCol == bCol) return;
 
-                ConnectBackboneInStraightLine(rRow, rCol, bRow, bCol);
+                ConnectBackboneInStraightLine(rRow, rCol, bRow, bCol, routerCell);
             }
             if (routerCell.Row < nearestBackboneCell.Row && routerCell.Column < nearestBackboneCell.Column)
             {
                 do
                 {
                     building.backboneCells.Add(building.cells[--bRow, --bCol]);
+
+                    DrawBackbone(bCol, bRow);
                 } while (rRow != bRow && rCol != bCol);
+
+                DrawRouter(routerCell);
 
                 // in case router can be installed straightly diagonally
                 if (rRow == bRow && rCol == bCol) return;
 
-                ConnectBackboneInStraightLine(rRow, rCol, bRow, bCol);
+                ConnectBackboneInStraightLine(rRow, rCol, bRow, bCol, routerCell);
             }
             if (routerCell.Row > nearestBackboneCell.Row && routerCell.Column < nearestBackboneCell.Column)
             {
                 do
                 {
                     building.backboneCells.Add(building.cells[++bRow, --bCol]);
+
+                    DrawBackbone(bCol, bRow);
                 } while (rRow != bRow && rCol != bCol);
+
+                DrawRouter(routerCell);
 
                 // in case router can be installed straightly diagonally
                 if (rRow == bRow && rCol == bCol) return;
 
-                ConnectBackboneInStraightLine(rRow, rCol, bRow, bCol);
+                ConnectBackboneInStraightLine(rRow, rCol, bRow, bCol, routerCell);
             }
         }
 
-        private void ConnectBackboneInStraightLine(int rRow, int rCol, int bRow, int bCol)
+        private void ConnectBackboneInStraightLine(int rRow, int rCol, int bRow, int bCol, Cell routerCell)
         {
             // Row coordinates are the same (backbone should be installed from either 
             // left to right to a router cell or vice versa)
@@ -379,12 +447,12 @@ namespace RouterPlacement
                 if (rCol > bCol)
                 {
                     // from left to right
-                    ConnectBackboneFromLeftToRight(rCol, bRow, bCol);
+                    ConnectBackboneFromLeftToRight(rCol, bRow, bCol, routerCell);
                 }
                 else
                 {
                     // from right to left
-                    ConnectBackboneFromRightToLeft(rCol, bRow, bCol);
+                    ConnectBackboneFromRightToLeft(rCol, bRow, bCol, routerCell);
                 }
             }
             // Columns are equal
@@ -393,46 +461,62 @@ namespace RouterPlacement
                 if (rRow > bRow)
                 {
                     // from top to bottom
-                    ConnectBackboneFromTopToBottom(rRow, bRow, bCol);
+                    ConnectBackboneFromTopToBottom(rRow, bRow, bCol, routerCell);
                 }
                 else
                 {
                     // from bottom to top
-                    ConnectBackboneFromBottomToTop(rRow, bRow, bCol);
+                    ConnectBackboneFromBottomToTop(rRow, bRow, bCol, routerCell);
                 }
             }
         }
 
-        private void ConnectBackboneFromLeftToRight(int rCol, int bRow, int bCol)
+        private void ConnectBackboneFromLeftToRight(int rCol, int bRow, int bCol, Cell routerCell)
         {
             do
             {
                 building.backboneCells.Add(building.cells[bRow, ++bCol]);
+
+                DrawBackbone(bCol, bRow);
             } while (rCol != bCol);
+
+            DrawRouter(routerCell);
         }
 
-        private void ConnectBackboneFromRightToLeft(int rCol, int bRow, int bCol)
+        private void ConnectBackboneFromRightToLeft(int rCol, int bRow, int bCol, Cell routerCell)
         {
             do
             {
                 building.backboneCells.Add(building.cells[bRow, --bCol]);
+
+                DrawBackbone(bCol, bRow);
             } while (rCol != bCol);
+
+            DrawRouter(routerCell);
         }
 
-        private void ConnectBackboneFromTopToBottom(int rRow, int bRow, int bCol)
+        private void ConnectBackboneFromTopToBottom(int rRow, int bRow, int bCol, Cell routerCell)
         {
             do
             {
                 building.backboneCells.Add(building.cells[++bRow, bCol]);
+
+                DrawBackbone(bCol, bRow);
             } while (rRow != bRow);
+
+            DrawRouter(routerCell);
         }
 
-        private void ConnectBackboneFromBottomToTop(int rRow, int bRow, int bCol)
+        private void ConnectBackboneFromBottomToTop(int rRow, int bRow, int bCol, Cell routerCell)
         {
             do
             {
                 building.backboneCells.Add(building.cells[--bRow, bCol]);
+
+                DrawBackbone(bCol, bRow);
             } while (rRow != bRow);
+
+            DrawRouter(routerCell);
         }
     }
 }

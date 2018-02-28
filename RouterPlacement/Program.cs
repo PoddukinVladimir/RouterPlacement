@@ -12,6 +12,7 @@ namespace RouterPlacement
     {
         static void Main(string[] args)
         {
+            SystemUtils.Maximize(); 
             var path = Environment.CurrentDirectory + "\\Input\\charleston_road.in";
             var input = File.ReadAllText(path);
             var building = Parser.Parse(input);
@@ -24,7 +25,7 @@ namespace RouterPlacement
 
             solver.CreateOutput();
 
-            Console.WriteLine("Your score is " + score);
+            //Console.WriteLine("Your score is " + score);
             Console.ReadKey();
         }
     }
