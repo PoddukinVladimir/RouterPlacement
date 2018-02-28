@@ -13,7 +13,7 @@ namespace RouterPlacement
         static void Main(string[] args)
         {
             SystemUtils.Maximize(); 
-            var path = Environment.CurrentDirectory + "\\Input\\charleston_road.in";
+            var path = Environment.CurrentDirectory + "\\Input\\lets_go_higher.in";
             var input = File.ReadAllText(path);
             var building = Parser.Parse(input);
 

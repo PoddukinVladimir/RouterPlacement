@@ -61,9 +61,11 @@ namespace RouterPlacement
             Console.ForegroundColor = ConsoleColor.White;
         }
 
-        public void DrawCoveredCells(int j, int i)
+        public void DrawCoveredCells(Cell coveredCell)
         {
-            Console.SetCursorPosition(j, i);
+            if (coveredCell.IsBackbone || coveredCell.HasRouter) return;
+
+            Console.SetCursorPosition(coveredCell.Column, coveredCell.Row);
             Console.ForegroundColor = ConsoleColor.Green;
             Console.Write(".");
             Console.ForegroundColor = ConsoleColor.White;
@@ -191,6 +193,7 @@ namespace RouterPlacement
                     CellCoverage = coveredTargetCellsCount
                 });
             }
+
 
             // bestCoverageRate = cellsSortedByBenefit.OrderByDescending(cb => cb.CellCoverage).ThenBy(cb => cb.CellCost).ToList()[0].CellCoverage;
 
@@ -342,7 +345,7 @@ namespace RouterPlacement
                     {
                         if (IsTargetCellCovered(building.cells[i, j], routerCell, wallCells))
                         {
-                            DrawCoveredCells(j, i);
+                            DrawCoveredCells(building.cells[i, j]);
 
                             building.cells[i, j].IsCovered = true;
                         }
@@ -377,6 +380,7 @@ namespace RouterPlacement
                 do
                 {
                     building.backboneCells.Add(building.cells[++bRow, ++bCol]);
+                    building.cells[bRow, bCol].IsBackbone = true;
 
                     DrawBackbone(bCol, bRow);
                 } while (rRow != bRow && rCol != bCol);
@@ -393,6 +397,7 @@ namespace RouterPlacement
                 do
                 {
                     building.backboneCells.Add(building.cells[--bRow, ++bCol]);
+                    building.cells[bRow, bCol].IsBackbone = true;
 
                     DrawBackbone(bCol, bRow);
                 } while (rRow != bRow && rCol != bCol);
@@ -409,6 +414,7 @@ namespace RouterPlacement
                 do
                 {
                     building.backboneCells.Add(building.cells[--bRow, --bCol]);
+                    building.cells[bRow, bCol].IsBackbone = true;
 
                     DrawBackbone(bCol, bRow);
                 } while (rRow != bRow && rCol != bCol);
@@ -425,6 +431,7 @@ namespace RouterPlacement
                 do
                 {
                     building.backboneCells.Add(building.cells[++bRow, --bCol]);
+                    building.cells[bRow, bCol].IsBackbone = true;
 
                     DrawBackbone(bCol, bRow);
                 } while (rRow != bRow && rCol != bCol);
@@ -476,6 +483,7 @@ namespace RouterPlacement
             do
             {
                 building.backboneCells.Add(building.cells[bRow, ++bCol]);
+                building.cells[bRow, bCol].IsBackbone = true;
 
                 DrawBackbone(bCol, bRow);
             } while (rCol != bCol);
@@ -488,6 +496,7 @@ namespace RouterPlacement
             do
             {
                 building.backboneCells.Add(building.cells[bRow, --bCol]);
+                building.cells[bRow, bCol].IsBackbone = true;
 
                 DrawBackbone(bCol, bRow);
             } while (rCol != bCol);
@@ -500,6 +509,7 @@ namespace RouterPlacement
             do
             {
                 building.backboneCells.Add(building.cells[++bRow, bCol]);
+                building.cells[bRow, bCol].IsBackbone = true;
 
                 DrawBackbone(bCol, bRow);
             } while (rRow != bRow);
@@ -512,6 +522,7 @@ namespace RouterPlacement
             do
             {
                 building.backboneCells.Add(building.cells[--bRow, bCol]);
+                building.cells[bRow, bCol].IsBackbone = true;
 
                 DrawBackbone(bCol, bRow);
             } while (rRow != bRow);

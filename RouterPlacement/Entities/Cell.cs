@@ -13,5 +13,6 @@ namespace RouterPlacement.Entities
         public string Type { get; set; }
         public bool HasRouter { get; set; }
         public bool IsCovered { get; set; }
+        public bool IsBackbone { get; set; }
     }
 }
